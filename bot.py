@@ -4,7 +4,7 @@ import configparser
 
 config = configparser.ConfigParser()
 config.read('/home/wanku/itc_moderator_bot/settings.ini')
-bot = telebot.TeleBot(config['DEFAULT']['token'])
+bot = telebot.TeleBot(config['DEFAULT']['token'], threaded=False)
 
 
 @bot.message_handler(commands=['start'])
