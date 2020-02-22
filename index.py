@@ -1,7 +1,7 @@
 from flask import Flask, request, abort
+from bot import bot
 import telebot
 import configparser
-import bot
 
 config = configparser.ConfigParser()
 config.read('settings.ini')
