@@ -4,7 +4,7 @@ import telebot
 import configparser
 
 config = configparser.ConfigParser()
-config.read('settings.ini')
+config.read('/home/wanku/itc_moderator_bot/settings.ini')
 app = Flask(__name__)
 
 bot.remove_webhook()

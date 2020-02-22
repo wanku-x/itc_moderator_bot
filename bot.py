@@ -3,7 +3,7 @@ import configparser
 # import mysql.connector
 
 config = configparser.ConfigParser()
-config.read('settings.ini')
+config.read('/home/wanku/itc_moderator_bot/settings.ini')
 bot = telebot.TeleBot(config['DEFAULT']['token'])
 
 
