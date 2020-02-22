@@ -1,22 +1,22 @@
 import telebot
 import configparser
-# import mysql.connector
+import mysql.connector
 
 config = configparser.ConfigParser()
 config.read('/home/wanku/itc_moderator_bot/settings.ini')
 bot = telebot.TeleBot(config['DEFAULT']['token'], threaded=False)
 
+db = mysql.connector.connect(
+    host=config['DEFAULT']['DB_host'],
+    user=config['DEFAULT']['DB_username'],
+    passwd=config['DEFAULT']['DB_password'],
+    database=config['DEFAULT']['DB_database'],
+)
+
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     bot.reply_to(message, "Hello from Bot")
-
-# db = mysql.connector.connect(
-#     host=config['DEFAULT']['DB_host'],
-#     user=config['DEFAULT']['DB_username'],
-#     passwd=config['DEFAULT']['DB_password'],
-#     database=config['DEFAULT']['DB_database'],
-# )
 
 # start_message = "Привет! Я бот, который будет модерировать твой чат!\n\n"\
 #                 "Я умею запускать голосование за бан участников!"
