@@ -1,10 +1,10 @@
 from telebot import types
 import database
 
-poll_message = "*[{0}](tg://user?id={1})* запустил голосование за бан "\
-               "*[{2}](tg://user?id={3})*\\.\n\nЕсли ты считаешь, что "\
-               "*{2}* нарушил правила чата, жми \"Да\"\\. "\
-               "Иначе \\- жми \"Нет\"\\."
+poll_message = "[{0}](tg://user?id={1}) запустил голосование за бан "\
+               "[{2}](tg://user?id={3})\n\nЕсли ты считаешь, что "\
+               "*{2}* нарушил(а) правила чата, жми \"Да\". "\
+               "Иначе - жми \"Нет\"."
 
 voteban_error_no_reply = "Выдели сообщение того, кто нарушает правила чата, "\
                          "и ответь ему командой\n`/voteban`"
@@ -45,7 +45,7 @@ def handle_voteban(bot, db, message):
                 accused_full_name,
                 accused_id,
             ),
-            parse_mode="MarkdownV2",
+            parse_mode="markdown",
             reply_markup=create_poll_keyboard()
         )
         # database.create_poll(
