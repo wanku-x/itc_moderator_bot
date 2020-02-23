@@ -45,7 +45,7 @@ def handle_voteban(bot, db, message):
                 accused_full_name,
                 accused_id,
             ),
-            parse_mode="markdown",
+            parse_mode="MarkdownV2",
             reply_markup=create_poll_keyboard()
         )
         # database.create_poll(
