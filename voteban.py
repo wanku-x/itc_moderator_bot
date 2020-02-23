@@ -7,7 +7,7 @@ poll_message = "*[{0}](tg://user?id={1})* запустил голосовани�
                "Иначе - жми \"Нет\"."
 
 voteban_error_no_reply = "Выдели сообщение того, кто нарушает правила чата, "\
-                         "и ответь ему командой `/voteban`"
+                         "и ответь ему командой\n`/voteban`"
 
 voteban_error_self_complaint = "В лицо себе выстрели. Больше пользы будет."
 
@@ -46,7 +46,7 @@ def handle_voteban(bot, db, message):
                 accused_id,
             ),
             parse_mode="markdown",
-            reply_markup=voteban.create_keyboard()
+            reply_markup=create_keyboard()
         )
         # database.create_poll(
         #     db=db,
