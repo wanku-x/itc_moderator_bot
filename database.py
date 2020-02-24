@@ -1,3 +1,4 @@
+from functools import reduce
 from pony import orm
 from models import Poll, Vote
 
@@ -32,6 +33,18 @@ def check_poll(chat_id, accused_id):
         chat_id=chat_id,
         accused_id=accused_id,
     )
+
+
+@orm.db_session
+def get_poll_results(poll_id):
+    votes = Vote.select(lambda vote: vote.poll_id.id == poll_id)[:]
+    poll_results = [vote.to_ban for vote in votes]
+    votes_for_amount = sum(poll_results)
+    votes_against_amount = len(poll_results) - votes_for_amount
+    return {
+        "votes_for_amount": votes_for_amount,
+        "votes_against_amount": votes_against_amount,
+    }
 
 
 @orm.db_session

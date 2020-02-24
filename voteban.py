@@ -31,33 +31,6 @@ voteban_error_admin_complaint = \
 
 
 #
-#   Database methods
-#
-def get_poll(bot, message):
-    pass
-
-
-def create_poll(bot, message):
-    pass
-
-
-def delete_poll(bot, call):
-    pass
-
-
-def get_vote(bot, call):
-    pass
-
-
-def create_vote(bot, call):
-    pass
-
-
-def update_vote(bot, call):
-    pass
-
-
-#
 #   User punishment methods
 #
 def mute_user(bot, call):
@@ -97,7 +70,7 @@ def can_poll(bot, message):
     if not message.reply_to_message:
         return {
             "success": False,
-            "error": "no_reply"
+            "error": "no_reply",
         }
 
     accused_id = message.reply_to_message.from_user.id      # ID Обвиняемый
@@ -112,28 +85,23 @@ def can_poll(bot, message):
 
     if poll:
         return {
-            "success": False,
             "error": "poll_already_created",
             "message": poll.message_id,
         }
     elif accused_id == accuser_id:
         return {
-            "success": False,
-            "error": "self_complaint"
+            "error": "self_complaint",
         }
     elif accused_id == bot_id:
         return {
-            "success": False,
-            "error": "bot_complaint"
+            "error": "bot_complaint",
         }
     elif accused_id in admins_id:
         return {
-            "success": False,
-            "error": "admin_complaint"
+            "error": "admin_complaint",
         }
     else:
         return {
-            "success": True,
             "error": None,
         }
 
@@ -158,7 +126,7 @@ def handle_voteban(bot, message):
         message.from_user.last_name,
     )
 
-    if user_can_poll["success"]:
+    if not user_can_poll["error"]:
         sended_message = bot.send_message(
             chat_id=message.chat.id,
             text=poll_message.format(
@@ -199,32 +167,32 @@ def handle_voteban(bot, message):
         return False
 
     if user_can_poll["error"] == "no_reply":
-        bot.send_message(
-            chat_id=message.chat.id,
+        bot.reply_to(
+            message=message,
             text=voteban_error_no_reply,
             parse_mode="markdown",
         )
         return False
 
     if user_can_poll["error"] == "self_complaint":
-        bot.send_message(
-            chat_id=message.chat.id,
+        bot.reply_to(
+            message=message,
             text=voteban_error_self_complaint,
             parse_mode="markdown",
         )
         return False
 
     if user_can_poll["error"] == "bot_complaint":
-        bot.send_message(
-            chat_id=message.chat.id,
+        bot.reply_to(
+            message=message,
             text=voteban_error_bot_complaint,
             parse_mode="markdown",
         )
         return False
 
     if user_can_poll["error"] == "admin_complaint":
-        bot.send_message(
-            chat_id=message.chat.id,
+        bot.reply_to(
+            message=message,
             text=voteban_error_admin_complaint,
             parse_mode="markdown",
         )
@@ -233,80 +201,53 @@ def handle_voteban(bot, message):
 
 
 def handle_callback_vote(bot, call):
-    pass
-    # poll = database.get_poll(
-    #     db=db,
-    #     chat_id=call.message.chat.id,
-    #     message_id=call.message.message_id,
-    # )
+    poll = database.get_poll(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+    )
 
-    # if not poll:
-    #     bot.answer_callback_query(
-    #         callback_query_id=call.id,
-    #         text="Данное голосование отсутствует в базе данных.",
-    #         show_alert=True,
-    #     )
-    #     return False
+    if not poll:
+        bot.answer_callback_query(
+            callback_query_id=call.id,
+            text="Данное голосование отсутствует в базе данных.",
+            show_alert=True,
+        )
+        return False
 
-    # vote = database.get_vote(
-    #     db=db,
-    #     poll_id=poll[0],
-    #     voted_id=call.from_user.id,
-    # )
+    vote = database.get_vote(
+        poll_id=poll.id,
+        voted_id=call.from_user.id,
+    )
 
-    # if vote and ((vote[3] and call.data == "yes") or
-    #    (not vote[3] and call.data == "no")):
-    #     bot.answer_callback_query(
-    #         callback_query_id=call.id,
-    #         text="Твой голос уже учтён",
-    #         show_alert=False,
-    #     )
-    #     return False
+    if not vote:
+        database.create_vote(
+            poll_id=poll.id,
+            voted_id=call.from_user.id,
+            to_ban=(call.data == "vote_for"),
+        )
+    else:
+        database.update_vote(
+            id=vote.id,
+            to_ban=(call.data == "vote_for"),
+        )
 
-    # if not vote:
-    #     database.create_vote(
-    #         db=db,
-    #         poll_id=poll[0],
-    #         voted_id=call.from_user.id,
-    #         to_ban=(call.data == "vote_for"),
-    #     )
-    # else:
-    #     database.update_vote(
-    #         db=db,
-    #         vote_id=vote[0],
-    #         to_ban=(call.data == "vote_for"),
-    #     )
+    poll_results = database.get_poll_results(
+        poll_id=poll.id,
+    )
 
-    # bot.answer_callback_query(
-    #     callback_query_id=call.id,
-    #     text="Твой голос: {}".format(
-    #         "Да" if call.data == "vote_for" else "Нет"
-    #     ),
-    #     show_alert=False,
-    # )
-    # poll_results = database.get_poll_results(
-    #     db=db,
-    #     poll_id=poll[0],
-    # )
-    # bot.edit_message_reply_markup(
-    #     chat_id=call.message.chat.id,
-    #     message_id=call.message.message_id,
-    #     reply_markup=create_keyboard(
-    #         poll_results[0],
-    #         poll_results[1],
-    #     ),
-    # )
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=create_keyboard(
+            poll_results["votes_for_amount"],
+            poll_results["votes_against_amount"],
+        ),
+    )
 
-    # if (poll_results[0] >= 2):
-    #     bot.send_message(
-    #         chat_id=call.message.chat.id,
-    #         text="Я забанил *username*",
-    #         parse_mode="markdown",
-    #     )
-
-    # if (poll_results[1] >= 2):
-    #     bot.send_message(
-    #         chat_id=call.message.chat.id,
-    #         text="Я не буду банить *username*",
-    #         parse_mode="markdown",
-    #     )
+    bot.answer_callback_query(
+        callback_query_id=call.id,
+        text="Твой голос: {}".format(
+            "Да" if call.data == "vote_for" else "Нет"
+        ),
+        show_alert=False,
+    )
