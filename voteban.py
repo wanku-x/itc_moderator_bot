@@ -238,7 +238,7 @@ def handle_callback_vote(bot, call):
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
-        reply_markup=create_keyboard(
+        reply_markup=create_poll_keyboard(
             poll_results["votes_for_amount"],
             poll_results["votes_against_amount"],
         ),
