@@ -193,7 +193,7 @@ def handle_voteban(bot, message):
                 accused_full_name,
                 accused_id,
             ),
-            reply_to_message_id=user_can_poll["message"]
+            reply_to_message_id=user_can_poll["message"],
             parse_mode="markdown",
         )
         return False
