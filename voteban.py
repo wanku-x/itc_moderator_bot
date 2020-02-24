@@ -225,6 +225,14 @@ def handle_callback_vote(bot, call):
             voted_id=call.from_user.id,
             to_ban=(call.data == "vote_for"),
         )
+    elif ((vote.to_ban and call.data == "vote_for") or
+         (not vote.to_ban and call.data == "vote_against")):
+        bot.answer_callback_query(
+            callback_query_id=call.id,
+            text="Твой голос уже учтён.",
+            show_alert=False,
+        )
+        return True
     else:
         database.update_vote(
             id=vote.id,
@@ -235,20 +243,19 @@ def handle_callback_vote(bot, call):
         poll_id=poll.id,
     )
 
-    try:
-        bot.edit_message_reply_markup(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            reply_markup=create_poll_keyboard(
-                poll_results["votes_for_amount"],
-                poll_results["votes_against_amount"],
-            ),
-        )
-    finally:
-        bot.answer_callback_query(
-            callback_query_id=call.id,
-            text="Твой голос: {}".format(
-                "Да" if call.data == "vote_for" else "Нет"
-            ),
-            show_alert=False,
-        )
+    bot.edit_message_reply_markup(
+        chat_id=call.message.chat.id,
+        message_id=call.message.message_id,
+        reply_markup=create_poll_keyboard(
+            poll_results["votes_for_amount"],
+            poll_results["votes_against_amount"],
+        ),
+    )
+
+    bot.answer_callback_query(
+        callback_query_id=call.id,
+        text="Твой голос: {}".format(
+            "Да" if call.data == "vote_for" else "Нет"
+        ),
+        show_alert=False,
+    )
