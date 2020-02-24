@@ -1,7 +1,9 @@
 import telebot
 import configparser
-import mysql.connector
+from pony import orm
+from models import db
 
+import database
 import start
 import help
 import voteban
@@ -10,12 +12,14 @@ config = configparser.ConfigParser()
 config.read('/home/wanku/itc_moderator_bot/settings.ini')
 bot = telebot.TeleBot(config['DEFAULT']['token'], threaded=False)
 
-db = mysql.connector.connect(
-    host=config['DEFAULT']['DB_host'],
-    user=config['DEFAULT']['DB_username'],
-    passwd=config['DEFAULT']['DB_password'],
-    database=config['DEFAULT']['DB_database'],
+db.bind(
+    provider='mysql',
+    host=config['DEFAULT']['db_host'],
+    user=config['DEFAULT']['db_username'],
+    passwd=config['DEFAULT']['db_password'],
+    db=config['DEFAULT']['db_database'],
 )
+db.generate_mapping(create_tables=True)
 
 
 @bot.message_handler(commands=['start'])
@@ -30,13 +34,13 @@ def handle_help(message):
 
 @bot.message_handler(commands=['voteban'])
 def handle_voteban(message):
-    voteban.handle_voteban(bot, db, message)
+    voteban.handle_voteban(bot, message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
     if call.data == "vote_for" or call.data == "vote_against":
-        voteban.handle_callback_vote(bot, db, call)
+        voteban.handle_callback_vote(bot, call)
     else:
         bot.answer_callback_query(
             callback_query_id=call.id,
