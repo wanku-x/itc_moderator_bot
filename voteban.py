@@ -193,22 +193,9 @@ def handle_voteban(bot, message):
                 accused_full_name,
                 accused_id,
             ),
+            reply_to_message_id=user_can_poll["message"],
             parse_mode="markdown",
         )
-        bot.forward_message(
-            chat_id=message.chat.id,
-            from_chat_id=message.chat.id,
-            message_id=user_can_poll["message"],
-        )
-        # bot.send_message(
-        #     chat_id=message.chat.id,
-        #     text=voteban_error_poll_already_created.format(
-        #         accused_full_name,
-        #         accused_id,
-        #     ),
-        #     reply_to_message_id=user_can_poll["message"],
-        #     parse_mode="markdown",
-        # )
         return False
 
     if user_can_poll["error"] == "no_reply":
