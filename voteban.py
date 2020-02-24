@@ -244,8 +244,6 @@ def handle_callback_vote(bot, call):
                 poll_results["votes_against_amount"],
             ),
         )
-    except:  # noqa
-        pass
     finally:
         bot.answer_callback_query(
             callback_query_id=call.id,
