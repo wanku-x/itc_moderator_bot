@@ -1,3 +1,4 @@
+from schema import Schema, And, Use, SchemaError
 import logging
 import json
 
@@ -15,6 +16,25 @@ rules_message = \
 setrules_message = \
     "Чтобы создать правила чата, необходимо отправить сообщение "\
     "следующего вида:"
+
+rules_schema = Schema({
+    'votes_for_decision': And(Use(int)),
+    'rules': [
+        {
+            'description': And(Use(str)),
+            'punishment': And(Use(str)),
+            'days': And(Use(int)),
+        }
+    ]
+})
+
+
+def validate_rules(schema, rules):
+    try:
+        schema.validate(rules)
+        return True
+    except SchemaError:
+        return False
 
 
 def handle_rules(bot, message):
@@ -34,17 +54,20 @@ def handle_setrules(bot, message):
         user_id=message.from_user.id,
     ).status
 
-    if not (message.chat.type == "private"):
+    if not (
+        (message.chat.type == "group" or message.chat.type == "supergroup") and
+        (member_status == "creator" or member_status == "administrator")
+    ):
         return False
 
-# if not (
-#     (message.chat.type == "group" or message.chat.type == "supergroup") and
-#     (member_status == "creator" or member_status == "administrator")
-# ):
-#     return False
+    try:
+        rules = json.loads(message.text[9:].strip())
+    except:  # noqa
+        rules = None
 
-    rules = json.loads(message.text[9:].strip())
-    logging.info(
-        rules["votes_for_decision"]
-    )
+    if not (rules and validate_rules(rules_schema, rules)):
+        logging.info(False)
+    else:
+        logging.info(True)
+
     return True
