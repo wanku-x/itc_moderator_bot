@@ -31,10 +31,6 @@ def handle_setrules(bot, message):
         (member_status == "creator" or member_status == "administrator")
     ):
         return False
-    
-    bot.send_message(
-        chat_id=message.chat.id,
-        text=setrules_message,
-        parse_mode="markdown",
-    )
+
+    print(message.text)
     return True
