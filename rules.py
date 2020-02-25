@@ -42,5 +42,5 @@ def handle_setrules(bot, message):
 # ):
 #     return False
 
-    logging.info(message.text[7:])
+    logging.info(message.text[9:])
     return True
