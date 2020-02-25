@@ -43,7 +43,8 @@ def handle_setrules(bot, message):
 # ):
 #     return False
 
+    rules = json.loads(message.text[9:].strip())
     logging.info(
-        json.loads(message.text[9:].strip())
+        rules["votes_for_decision"]
     )
     return True
