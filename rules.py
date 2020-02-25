@@ -1,4 +1,5 @@
 import logging
+import json
 
 logging.basicConfig(
     filename="/home/wanku/itc_moderator_bot/debug.log",
@@ -42,5 +43,7 @@ def handle_setrules(bot, message):
 # ):
 #     return False
 
-    logging.info(message.text[9:].strip())
+    logging.info(
+        json.loads(message.text[9:].strip())
+    )
     return True
