@@ -35,11 +35,12 @@ def handle_setrules(bot, message):
 
     if not (message.chat.type == "private"):
         return False
+
 # if not (
 #     (message.chat.type == "group" or message.chat.type == "supergroup") and
 #     (member_status == "creator" or member_status == "administrator")
 # ):
 #     return False
 
-    logging.info(message.text)
+    logging.info(message.text[7:])
     return True
