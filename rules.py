@@ -22,8 +22,8 @@ def handle_rules(bot, message):
 
 def handle_setrules(bot, message):
     member_status = bot.get_chat_member(
-        chat_id=message.chat.id
-        user_id=message.from_user.id
+        chat_id=message.chat.id,
+        user_id=message.from_user.id,
     ).status
 
     if not (
