@@ -33,11 +33,13 @@ def handle_setrules(bot, message):
         user_id=message.from_user.id,
     ).status
 
-    if not (
-        (message.chat.type == "group" or message.chat.type == "supergroup") and
-        (member_status == "creator" or member_status == "administrator")
-    ):
+    if not (message.chat.type == "private"):
         return False
+# if not (
+#     (message.chat.type == "group" or message.chat.type == "supergroup") and
+#     (member_status == "creator" or member_status == "administrator")
+# ):
+#     return False
 
     logging.debug(message.text)
     return True
