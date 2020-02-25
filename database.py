@@ -3,6 +3,9 @@ from pony import orm
 from models import Poll, Vote
 
 
+#
+#   Poll methods
+#
 @orm.db_session
 def create_poll(chat_id, message_id, accuser_id, accused_id):
     try:
@@ -58,6 +61,9 @@ def delete_poll(id):
         return True
 
 
+#
+#   Vote methods
+#
 @orm.db_session
 def create_vote(poll_id, voted_id, to_ban):
     try:
@@ -91,3 +97,8 @@ def update_vote(id, to_ban):
         vote = None
     finally:
         return vote
+
+
+#
+#   Rule methods
+#

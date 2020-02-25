@@ -225,8 +225,10 @@ def handle_callback_vote(bot, call):
             voted_id=call.from_user.id,
             to_ban=(call.data == "vote_for"),
         )
-    elif ((vote.to_ban and call.data == "vote_for") or
-         (not vote.to_ban and call.data == "vote_against")):
+    elif (
+        (vote.to_ban and call.data == "vote_for") or
+        (not vote.to_ban and call.data == "vote_against")
+    ):
         bot.answer_callback_query(
             callback_query_id=call.id,
             text="Твой голос уже учтён.",
