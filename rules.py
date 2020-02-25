@@ -1,3 +1,10 @@
+import logging
+
+logging.basicConfig(
+    filename="/home/wanku/itc_moderator_bot/debug.log",
+    level=logging.DEBUG
+)
+
 rules_message = \
     "Правила чата:\n\n"\
     "1. Хуй сосать\n"\
@@ -32,5 +39,5 @@ def handle_setrules(bot, message):
     ):
         return False
 
-    print(message.text)
+    logging.debug(message.text)
     return True
