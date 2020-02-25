@@ -2,7 +2,7 @@ import logging
 
 logging.basicConfig(
     filename="/home/wanku/itc_moderator_bot/debug.log",
-    level=logging.DEBUG
+    level=logging.INFO
 )
 
 rules_message = \
@@ -41,5 +41,5 @@ def handle_setrules(bot, message):
 # ):
 #     return False
 
-    logging.debug(message.text)
+    logging.info(message.text)
     return True
