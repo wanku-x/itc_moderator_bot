@@ -45,7 +45,7 @@ def handle_rules(message):
 
 @bot.message_handler(commands=['setrules'])
 def handle_rules(message):
-    rules.set_rules(bot, message)
+    rules.handle_setrules(bot, message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
