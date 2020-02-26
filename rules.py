@@ -1,91 +1,36 @@
-from schema import Schema, And, Use, SchemaError
-import logging
-import json
+import database
 
-logging.basicConfig(
-    filename="/home/wanku/itc_moderator_bot/debug.log",
-    level=logging.INFO
-)
+rules_message_success = \
+    'Правила чата:\n\n'
 
-rules_message = \
-    "Правила чата:\n\n"\
-    "1. Хуй сосать\n"\
-    "2. Еблом качать\n"\
-    "3. Хуйней страдать"
-
-setrules_message = \
-    "Чтобы создать правила чата, необходимо отправить сообщение "\
-    "cледующего вида:\n"\
-    '```'\
-    '/setrules\n'\
-    '{\n'\
-    '  "votes_for_decision": Number,\n'\
-    '  "rules":[\n'\
-    '    {\n'\
-    '      "description": String,\n'\
-    '      "punishment": "mute"|"kick"|"ban",\n'\
-    '      "days": Number\n'\
-    '    },\n'\
-    '  ]\n'\
-    '}\n'\
-    '```'
-
-rules_schema = Schema({
-    'votes_for_decision': And(Use(int)),
-    'rules': [
-        {
-            'description': And(Use(str)),
-            'punishment': And(Use(str)),
-            'days': And(Use(int)),
-        }
-    ]
-})
-
-
-def validate_rules(rules_schema, rules):
-    try:
-        rules_schema.validate(rules)
-        return True
-    except SchemaError:
-        return False
+rules_message_error = \
+    'В чате ещё не заданы правила.'
 
 
 def handle_rules(bot, message):
-    if message.chat.type == "group" or message.chat.type == "supergroup":
+    if not (message.chat.type == "group" or message.chat.type == "supergroup"):
+        return False
+
+    settings = database.get_settings(
+        chat_id=message.chat.id
+    )
+
+    if not settings:
         bot.send_message(
             chat_id=message.chat.id,
-            text=rules_message,
+            text=rules_message_error,
             parse_mode="markdown",
         )
-        return True
-    return False
+        return False
 
+    for i in range(settings.rules):
+        rules_message_success = \
+            rules_message_success + i + '. ' + settings.rules[i] + '\n'
 
-def handle_setrules(bot, message):
-    member_status = bot.get_chat_member(
+    bot.send_message(
         chat_id=message.chat.id,
-        user_id=message.from_user.id,
-    ).status
-
-    if not (
-        (message.chat.type == "group" or message.chat.type == "supergroup") and
-        (member_status == "creator" or member_status == "administrator")
-    ):
-        return False
-
-    try:
-        rules = json.loads(message.text[9:].strip())
-    except json.decoder.JSONDecodeError:
-        rules = None
-
-    if not (rules and validate_rules(rules_schema, rules)):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=setrules_message,
-            parse_mode="markdown",
-        )
-        return False
-
-    logging.info(rules)
+        text=rules_message_success,
+        parse_mode="markdown",
+    )
 
     return True

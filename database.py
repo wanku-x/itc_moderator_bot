@@ -100,5 +100,38 @@ def update_vote(id, to_ban):
 
 
 #
-#   Rule methods
+#   Settings methods
 #
+@orm.db_session
+def create_settings(chat_id, votes_for_decision, rules):
+    try:
+        settings = Settings(
+            chat_id=chat_id,
+            votes_for_decision=votes_for_decision,
+            rules=rules,
+        )
+        orm.commit()
+    except:  # noqa
+        settings = None
+    finally:
+        return settings
+
+
+@orm.db_session
+def update_settings(id, votes_for_decision, rules):
+    try:
+        settings = Settings[id]
+        settings.votes_for_decision = votes_for_decision
+        settings.rules = rules
+        orm.commit()
+    except:  # noqa
+        settings = None
+    finally:
+        return settings
+
+
+@orm.db_session
+def get_settings(chat_id):
+    return Settings.get(
+        chat_id=chat_id,
+    )

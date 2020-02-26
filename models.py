@@ -20,3 +20,10 @@ class Vote(db.Entity):
     voted_id = orm.Required(int, size=64)
     to_ban = orm.Required(bool)
     orm.composite_key(poll_id, voted_id)
+
+
+class Settings(db.Entity):
+    id = orm.PrimaryKey(int, size=64, auto=True)
+    chat_id = orm.Required(int, size=64, unique=True)
+    votes_for_decision = orm.Required(int)
+    rules = orm.Required(orm.Json)
