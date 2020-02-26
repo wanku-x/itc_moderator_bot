@@ -86,6 +86,6 @@ def handle_setrules(bot, message):
         )
         return False
 
-    logger.info(rules)
+    logging.info(rules)
 
     return True
