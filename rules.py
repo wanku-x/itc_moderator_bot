@@ -15,7 +15,20 @@ rules_message = \
 
 setrules_message = \
     "Чтобы создать правила чата, необходимо отправить сообщение "\
-    "следующего вида:"
+    "cледующего вида:\n"\
+    '```'\
+    '/setrules\n'\
+    '{\n'\
+    '  "votes_for_decision": Number,\n'\
+    '  "rules":[\n'\
+    '    {\n'\
+    '      "description": String,\n'\
+    '      "punishment": "mute"|"kick"|"ban",\n'\
+    '      "days": Number\n'\
+    '    },\n'\
+    '  ]\n'\
+    '}\n'\
+    '```'
 
 rules_schema = Schema({
     'votes_for_decision': And(Use(int)),
@@ -29,9 +42,9 @@ rules_schema = Schema({
 })
 
 
-def validate_rules(schema, rules):
+def validate_rules(rules_schema, rules):
     try:
-        schema.validate(rules)
+        rules_schema.validate(rules)
         return True
     except SchemaError:
         return False
@@ -62,12 +75,17 @@ def handle_setrules(bot, message):
 
     try:
         rules = json.loads(message.text[9:].strip())
-    except:  # noqa
+    except json.decoder.JSONDecodeError:
         rules = None
 
     if not (rules and validate_rules(rules_schema, rules)):
-        logging.info(False)
-    else:
-        logging.info(True)
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=setrules_message,
+            parse_mode="markdown",
+        )
+        return False
+
+    logger.info(rules)
 
     return True
