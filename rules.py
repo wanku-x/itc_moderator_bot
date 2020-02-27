@@ -23,7 +23,7 @@ def handle_rules(bot, message):
         )
         return False
 
-    for i in range(settings.rules):
+    for i in range(len(settings.rules)):
         rules_message_success = \
             rules_message_success + i + '. ' + settings.rules[i] + '\n'
 
