@@ -1,6 +1,6 @@
 from functools import reduce
 from pony import orm
-from models import Poll, Vote
+from models import Poll, Vote, Settings
 
 
 #
