@@ -6,7 +6,6 @@ from models import db
 import database
 import start
 import help
-import rules
 import settings
 import voteban
 
@@ -42,11 +41,6 @@ def handle_settings(message):
 @bot.message_handler(commands=['voteban'])
 def handle_voteban(message):
     voteban.handle_voteban(bot, message)
-
-
-@bot.message_handler(commands=['rules'])
-def handle_rules(message):
-    rules.handle_rules(bot, message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
