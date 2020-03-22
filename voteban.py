@@ -114,6 +114,14 @@ def handle_voteban(bot, message):
 
     user_can_poll = can_poll(bot, message)
 
+    if user_can_poll["error"] == "no_reply":
+        bot.reply_to(
+            message=message,
+            text=voteban_error_no_reply,
+            parse_mode="markdown",
+        )
+        return False
+
     accused_id = message.reply_to_message.from_user.id
     accused_full_name = "{} {}".format(
         message.reply_to_message.from_user.first_name,
@@ -161,14 +169,6 @@ def handle_voteban(bot, message):
                 accused_id,
             ),
             reply_to_message_id=user_can_poll["message"],
-            parse_mode="markdown",
-        )
-        return False
-
-    if user_can_poll["error"] == "no_reply":
-        bot.reply_to(
-            message=message,
-            text=voteban_error_no_reply,
             parse_mode="markdown",
         )
         return False
