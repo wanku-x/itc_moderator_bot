@@ -27,7 +27,7 @@ def handle_rules(bot, message):
 
     for i in range(len(settings.rules)):
         rules_message = \
-            rules_message + str(i) + '. ' + str(settings.rules[i]) + '\n'
+            rules_message + str(i) + '. ' + settings.rules[i].description + '\n'
 
     bot.send_message(
         chat_id=message.chat.id,
