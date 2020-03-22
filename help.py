@@ -1,10 +1,20 @@
 help_private_message = \
-    "Это помощь по моим командам!\n\n"\
-    "Это личное сообщение"
-
-help_group_message = \
-    "Это помощь по моим командам!\n\n"\
-    "Это публичное сообщение"
+    "Добавь бота в свою группу и назначь его администратором, "\
+    "предоставив ему все права. После этого, удали его из группы, "\
+    "удали его из черного списка группы, и снова добавь, "\
+    "назначив его администратором со всеми правами.\n\n"\
+    "Осталось настроить бота. Введи команду `/settings` в группе, "\
+    "и следуя инструкции заполни настройки.\n\n"\
+    "Доступные команды:\n\n"\
+    "`/settings <settings>` - Настройка бота в группе "\
+    "(доступно только админам)\n\n"\
+    "`/ban` - Бан участника группы (доступно только админам)\n\n"\
+    "`/kick` - Удаление участника из группы (доступно только админам)\n\n"\
+    "`/mute <amount_days>` - Мьют участника на N дней "\
+    "(доступно только админам)\n\n"\
+    "`/offense` - Голосование за наказание участника группы\n\n"\
+    "`/spam` - Голосование за бан спамера\n\n"\
+    "`/nometa` - Отправляет ссылку на nometa.xyz"
 
 
 def handle_help(bot, message):
@@ -12,13 +22,6 @@ def handle_help(bot, message):
         bot.send_message(
             chat_id=message.chat.id,
             text=help_private_message,
-            parse_mode="markdown",
-        )
-        return True
-    if message.chat.type == "group" or message.chat.type == "supergroup":
-        bot.send_message(
-            chat_id=message.chat.id,
-            text=help_group_message,
             parse_mode="markdown",
         )
         return True
