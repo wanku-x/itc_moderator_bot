@@ -103,12 +103,13 @@ def update_vote(id, to_ban):
 #   Settings methods
 #
 @orm.db_session
-def create_settings(chat_id, votes_for_decision, rules):
+def create_settings(chat_id, votes_for_decision, punishment, days):
     try:
         settings = Settings(
             chat_id=chat_id,
             votes_for_decision=votes_for_decision,
-            rules=rules,
+            punishment=punishment,
+            days=days,
         )
         orm.commit()
     except:  # noqa
@@ -118,11 +119,12 @@ def create_settings(chat_id, votes_for_decision, rules):
 
 
 @orm.db_session
-def update_settings(id, votes_for_decision, rules):
+def update_settings(id, votes_for_decision, punishment, days):
     try:
         settings = Settings[id]
         settings.votes_for_decision = votes_for_decision
-        settings.rules = rules
+        settings.punishment = punishment
+        settings.days = days
         orm.commit()
     except:  # noqa
         settings = None

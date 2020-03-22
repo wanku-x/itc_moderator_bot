@@ -25,15 +25,10 @@ settings_message_success = \
 
 settings_schema = Schema({
     'votes_for_decision': And(int),
-    'rules': [
-        {
-            'description': And(str),
-            'punishment': And(str, lambda p: (
-                p == 'mute' or p == 'kick' or p == 'ban'
-            )),
-            'days': And(int),
-        }
-    ]
+    'punishment': And(str, lambda p: (
+        p == 'mute' or p == 'kick' or p == 'ban'
+    )),
+    'days': And(int),
 })
 
 
@@ -81,13 +76,15 @@ def handle_settings(bot, message):
         database.create_settings(
             chat_id=message.chat.id,
             votes_for_decision=settings_from_message["votes_for_decision"],
-            rules=settings_from_message["rules"],
+            punishment=settings_from_message["punishment"],
+            days=settings_from_message["days"],
         )
     else:
         database.update_settings(
             id=settings.id,
             votes_for_decision=settings_from_message["votes_for_decision"],
-            rules=settings_from_message["rules"],
+            punishment=settings_from_message["punishment"],
+            days=settings_from_message["days"],
         )
 
     bot.send_message(

@@ -26,4 +26,5 @@ class Settings(db.Entity):
     id = orm.PrimaryKey(int, size=64, auto=True)
     chat_id = orm.Required(int, size=64, unique=True)
     votes_for_decision = orm.Required(int)
-    rules = orm.Required(orm.Json)
+    punishment = orm.Required(str)
+    days = orm.Required(int)
