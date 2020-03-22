@@ -31,7 +31,7 @@ def handle_rules(bot, message):
 
     bot.send_message(
         chat_id=message.chat.id,
-        text=rules_message_success,
+        text=rules_message,
         parse_mode="markdown",
     )
 
