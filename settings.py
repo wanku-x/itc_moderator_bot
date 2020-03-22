@@ -10,15 +10,15 @@ settings_message_error = \
     '/settings\n'\
     '{\n'\
     '  "votes_for_decision": Integer,\n'\
-    '  "rules":[\n'\
-    '    {\n'\
-    '      "description": String,\n'\
-    '      "punishment": "mute"|"kick"|"ban",\n'\
-    '      "days": Integer\n'\
-    '    },\n'\
-    '  ]\n'\
+    '  "punishment": "mute"|"kick"|"ban",\n'\
+    '  "days": Integer\n'\
     '}\n'\
-    '```'
+    '```\n\n'\
+    '*votes_for_decision* - Сколько голосов необходимо '\
+    'для принятия решения (банить/не банить)\n\n'\
+    '*punishment* - Вид наказания (бан/кик/мьют)\n\n'\
+    '*days* - Количество дней мьюта '\
+    '(если наказание не мьют - ставьте значение 0)'\
 
 settings_message_success = \
     'Настройки успешно установлены!'
