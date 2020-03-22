@@ -23,9 +23,11 @@ def handle_rules(bot, message):
         )
         return False
 
+    rules_message = rules_message_success
+
     for i in range(len(settings.rules)):
-        rules_message_success = \
-            rules_message_success + i + '. ' + settings.rules[i] + '\n'
+        rules_message = \
+            rules_message + i + '. ' + settings.rules[i] + '\n'
 
     bot.send_message(
         chat_id=message.chat.id,

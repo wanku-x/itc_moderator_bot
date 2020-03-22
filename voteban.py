@@ -69,7 +69,6 @@ def create_poll_keyboard(votes_for_amount=0, votes_against_amount=0):
 def can_poll(bot, message):
     if not message.reply_to_message:
         return {
-            "success": False,
             "error": "no_reply",
         }
 
@@ -261,3 +260,5 @@ def handle_callback_vote(bot, call):
         ),
         show_alert=False,
     )
+
+    # Проверка (банить/не банить)
