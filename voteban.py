@@ -6,9 +6,10 @@ import database
 #
 poll_message = \
     "[{0}](tg://user?id={1}) запустил голосование за бан "\
-    "[{2}](tg://user?id={3})\n\nЕсли ты считаешь, что "\
-    "*{2}* нарушил(а) правила чата, жми *\"Да\"*. "\
-    "Иначе - жми *\"Нет\"*."
+    "[{2}](tg://user?id={3})\n\n"\
+    "Если ты считаешь, что *{2}* нарушил(а) правила чата, жми *\"Да\"*. "\
+    "Иначе - жми *\"Нет\"*.\n\n"\
+    "{4}"\
 
 voteban_error_poll_already_created = \
     "Голосование за бан [{0}](tg://user?id={1}) уже существует"\
@@ -29,20 +30,14 @@ voteban_error_bot_complaint = \
 voteban_error_admin_complaint = \
     "Ты на кого батон крошишь? Проблем захотел?"
 
+callback_message = \
+    "Твой голос: {0}"
 
-#
-#   User punishment methods
-#
-def mute_user(bot, call):
-    pass
+callback_error_no_poll = \
+    "Данное голосование отсутствует в базе данных."
 
-
-def ban_user(bot, call):
-    pass
-
-
-def kick_user(bot, call):
-    pass
+callback_error_vote_counted = \
+    "Твой голос уже учтён."
 
 
 #
@@ -64,7 +59,7 @@ def create_poll_keyboard(votes_for_amount=0, votes_against_amount=0):
 
 
 #
-#   Verify methods
+#   Verify method
 #
 def can_poll(bot, message):
     if not message.reply_to_message:
@@ -108,7 +103,7 @@ def can_poll(bot, message):
 #
 #   Handle methods
 #
-def handle_voteban(bot, message):
+def handle_voteban(bot, message, reason):
     if not (message.chat.type == "group" or message.chat.type == "supergroup"):
         return False
 
@@ -141,6 +136,8 @@ def handle_voteban(bot, message):
                 accuser_id,
                 accused_full_name,
                 accused_id,
+                "*Причина:* Спам" if reason == "spam" else
+                "*Сообщение:* " + message.reply_to_message.text,
             ),
             parse_mode="markdown",
             reply_markup=create_poll_keyboard()
@@ -151,6 +148,8 @@ def handle_voteban(bot, message):
             message_id=sended_message.message_id,
             accuser_id=accuser_id,
             accused_id=accused_id,
+            message=message.reply_to_message.text,
+            reason=reason
         )
 
         if not poll_created:
@@ -208,7 +207,7 @@ def handle_callback_vote(bot, call):
     if not poll:
         bot.answer_callback_query(
             callback_query_id=call.id,
-            text="Данное голосование отсутствует в базе данных.",
+            text=callback_error_no_poll,
             show_alert=True,
         )
         return False
@@ -230,7 +229,7 @@ def handle_callback_vote(bot, call):
     ):
         bot.answer_callback_query(
             callback_query_id=call.id,
-            text="Твой голос уже учтён.",
+            text=callback_error_vote_counted,
             show_alert=False,
         )
         return True
@@ -255,7 +254,7 @@ def handle_callback_vote(bot, call):
 
     bot.answer_callback_query(
         callback_query_id=call.id,
-        text="Твой голос: {}".format(
+        text=callback_message.format(
             "Да" if call.data == "vote_for" else "Нет"
         ),
         show_alert=False,

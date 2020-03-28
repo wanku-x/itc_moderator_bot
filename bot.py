@@ -38,9 +38,14 @@ def handle_settings(message):
     settings.handle_settings(bot, message)
 
 
-@bot.message_handler(commands=['voteban'])
-def handle_voteban(message):
-    voteban.handle_voteban(bot, message)
+@bot.message_handler(commands=['offense'])
+def handle_offense(message):
+    voteban.handle_voteban(bot, message, 'other')
+
+
+@bot.message_handler(commands=['spam'])
+def handle_offense(message):
+    voteban.handle_voteban(bot, message, 'spam')
 
 
 @bot.callback_query_handler(func=lambda call: True)
