@@ -298,7 +298,7 @@ def handle_callback_vote(bot, call):
         bot.send_message(
             chat_id=call.message.chat.id,
             text=result_message_innocent.format(
-                accuced_full_name,
+                accused_full_name,
                 accused_id,
             ),
             parse_mode="markdown",
@@ -308,7 +308,7 @@ def handle_callback_vote(bot, call):
         bot.send_message(
             chat_id=call.message.chat.id,
             text=result_message_guilty.format(
-                accuced_full_name,
+                accused_full_name,
                 accused_id,
                 "Выебать в жопу"
             ),
