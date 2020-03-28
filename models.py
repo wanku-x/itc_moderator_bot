@@ -9,7 +9,7 @@ class Poll(db.Entity):
     message_id = orm.Required(int, size=64)
     accuser_id = orm.Required(int, size=64)
     accused_id = orm.Required(int, size=64)
-    message = orm.Required(str, size=4096)
+    message = orm.Required(str, 4096)
     reason = orm.Required(str)
     votes = orm.Set("Vote")
     orm.composite_key(chat_id, message_id)
