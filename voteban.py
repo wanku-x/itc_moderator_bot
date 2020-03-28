@@ -6,14 +6,14 @@ import database
 #
 poll_message = \
     "[{0}](tg://user?id={1}) запустил голосование за бан "\
-    "[{2}](tg://user?id={3})\n\n"\
+    "[{2}](tg://user?id={3}).\n\n"\
     "Если ты считаешь, что *{2}* нарушил(а) правила чата, жми *\"Да\"*. "\
     "Иначе - жми *\"Нет\"*.\n\n"\
     "{4}"\
 
 voteban_error_poll_already_created = \
-    "Голосование за бан [{0}](tg://user?id={1}) уже существует"\
-    "\n\nЯ перешлю голосование, если вы вдруг его потеряли"
+    "Голосование за бан [{0}](tg://user?id={1}) уже существует."\
+    "\n\nЯ перешлю голосование, если вы вдруг его потеряли."
 
 voteban_error_no_reply = \
     "Выдели сообщение того, кто нарушает правила чата, "\
@@ -36,10 +36,19 @@ callback_message = \
     "Твой голос: {0}"
 
 callback_error_no_poll = \
-    "Данное голосование отсутствует в базе данных."
+    "Голосование окончено."
 
 callback_error_vote_counted = \
     "Твой голос уже учтён."
+
+result_message_innocent = \
+    "Большинство решило, что [{0}](tg://user?id={1}) "\
+    "не нарушал(а) правил чата. Голосование окончено."
+
+result_message_guilty = \
+    "Большинство решило, что [{0}](tg://user?id={1}) "\
+    "нарушил(а) правила чата. Голосование окончено.\n\n"\
+    "*Наказание:* {3}."
 
 
 #
@@ -109,7 +118,10 @@ def handle_voteban(bot, message, reason):
     if not (message.chat.type == "group" or message.chat.type == "supergroup"):
         return False
 
-    user_can_poll = can_poll(bot, message)
+    user_can_poll = can_poll(
+        bot=bot,
+        message=message,
+    )
 
     if user_can_poll["error"] == "no_reply":
         bot.reply_to(
@@ -249,8 +261,8 @@ def handle_callback_vote(bot, call):
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
         reply_markup=create_poll_keyboard(
-            poll_results["votes_for_amount"],
-            poll_results["votes_against_amount"],
+            votes_for_amount=poll_results["votes_for_amount"],
+            votes_against_amount=poll_results["votes_against_amount"],
         ),
     )
 
@@ -262,4 +274,46 @@ def handle_callback_vote(bot, call):
         show_alert=False,
     )
 
-    # Проверка (банить/не банить)
+    settings = database.get_settings(
+        chat_id=call.message.chat.id
+    )
+
+    if (
+        (settings.votes_for_decision < poll_results["votes_for_amount"]) and
+        (settings.votes_for_decision < poll_results["votes_against_amount"])
+    ):
+        return True
+
+    accused_id = poll.accused_id
+    accused = bot.get_chat_member(
+        chat_id=call.message.chat.id,
+        user_id=accused_id,
+    )
+    accused_full_name = "{} {}".format(
+        accused.user.first_name,
+        accused.user.last_name,
+    )
+
+    if (settings.votes_for_decision >= poll_results["votes_against_amount"]):
+        bot.send_message(
+            chat_id=call.message.chat.id,
+            text=result_message_innocent.format(
+                accuced_full_name,
+                accused_id,
+            ),
+            parse_mode="markdown",
+        )
+        database.delete_poll(poll.id)
+    else:
+        bot.send_message(
+            chat_id=call.message.chat.id,
+            text=result_message_guilty.format(
+                accuced_full_name,
+                accused_id,
+                "Выебать в жопу"
+            ),
+            parse_mode="markdown",
+        )
+        database.delete_poll(poll.id)
+    
+    return True
