@@ -315,5 +315,5 @@ def handle_callback_vote(bot, call):
             parse_mode="markdown",
         )
         database.delete_poll(poll.id)
-    
+
     return True
