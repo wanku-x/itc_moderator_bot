@@ -282,17 +282,11 @@ def handle_callback_vote(bot, call):
         (poll_results["votes_for_amount"] < settings.votes_for_decision) and
         (poll_results["votes_against_amount"] < settings.votes_for_decision)
     ):
-        bot.send_message(
-            chat_id=call.message.chat.id,
-            text="Голосов не достаточно для принятия",
-            parse_mode="markdown",
-        )
         return True
 
-    accused_id = poll.accused_id
     accused = bot.get_chat_member(
         chat_id=call.message.chat.id,
-        user_id=accused_id,
+        user_id=poll.accused_id,
     )
     accused_full_name = "{} {}".format(
         accused.user.first_name,
@@ -304,21 +298,24 @@ def handle_callback_vote(bot, call):
             chat_id=call.message.chat.id,
             text=result_message_innocent.format(
                 accused_full_name,
-                accused_id,
+                poll.accused_id,
             ),
             parse_mode="markdown",
         )
-        # database.delete_poll(poll.id)
-    else:
-        bot.send_message(
-            chat_id=call.message.chat.id,
-            text=result_message_guilty.format(
-                accused_full_name,
-                accused_id,
-                "Выебать в жопу"
-            ),
-            parse_mode="markdown",
-        )
-        # database.delete_poll(poll.id)
+        database.delete_poll(poll.id)
+        return True
+
+    punishment = "ban" if poll.reason == "spam" else settings.punishment
+
+    bot.send_message(
+        chat_id=call.message.chat.id,
+        text=result_message_guilty.format(
+            accused_full_name,
+            poll.accused_id,
+            punishment,
+        ),
+        parse_mode="markdown",
+    )
+    database.delete_poll(poll.id)
 
     return True
