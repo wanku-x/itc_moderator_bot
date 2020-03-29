@@ -48,7 +48,7 @@ result_message_innocent = \
 result_message_guilty = \
     "Большинство решило, что [{0}](tg://user?id={1}) "\
     "нарушил(а) правила чата. Голосование окончено.\n\n"\
-    "*Наказание:* {3}."
+    "*Наказание:* {2}."
 
 
 #
@@ -284,7 +284,7 @@ def handle_callback_vote(bot, call):
     ):
         bot.send_message(
             chat_id=call.message.chat.id,
-            text="Голосов не достаточно для принятия решения",
+            text="Голосов не достаточно для принятия",
             parse_mode="markdown",
         )
         return True
