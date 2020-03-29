@@ -297,9 +297,9 @@ def handle_callback_vote(bot, call):
     bot.send_message(
         chat_id=call.message.chat.id,
         text="{}\n{}\n{}".format(
-            settings.votes_for_decision,
-            poll_results["votes_for_amount"],
-            poll_results["votes_against_amount"],
+            type(settings.votes_for_decision),
+            type(poll_results["votes_for_amount"]),
+            type(poll_results["votes_against_amount"]),
         )
         parse_mode="markdown",
     )
