@@ -300,7 +300,7 @@ def handle_callback_vote(bot, call):
             type(settings.votes_for_decision),
             type(poll_results["votes_for_amount"]),
             type(poll_results["votes_against_amount"]),
-        )
+        ),
         parse_mode="markdown",
     )
 
