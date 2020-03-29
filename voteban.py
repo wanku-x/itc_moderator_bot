@@ -282,6 +282,11 @@ def handle_callback_vote(bot, call):
         (poll_results["votes_for_amount"] < settings.votes_for_decision) and
         (poll_results["votes_against_amount"] < settings.votes_for_decision)
     ):
+        bot.send_message(
+            chat_id=call.message.chat.id,
+            text="Голосов не достаточно для принятия решения",
+            parse_mode="markdown",
+        )
         return True
 
     accused_id = poll.accused_id
