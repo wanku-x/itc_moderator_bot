@@ -1,4 +1,5 @@
 from telebot import types
+import time
 import database
 
 #
@@ -306,6 +307,35 @@ def handle_callback_vote(bot, call):
         return True
 
     punishment = "ban" if poll.reason == "spam" else settings.punishment
+
+    if (punishment == "ban"):
+        bot.kick_chat_member(
+            chat_id=call.message.chat.id,
+            user_id=poll.accused_id,
+            until_date=time.time(),
+        )
+    elif (punishment == "kick"):
+        bot.kick_chat_member(
+            chat_id=call.message.chat.id,
+            user_id=poll.accused_id,
+            until_date=time.time() + 60,
+        )
+    else:
+        bot.restrict_chat_member(
+            chat_id=call.message.chat.id,
+            user_id=poll.accused_id,
+            permissions={
+                "can_send_messages"=False,
+                "can_send_media_messages"=False,
+                "can_send_polls"=False,
+                "can_send_other_messages"=False,
+                "can_add_web_page_previews"=False,
+                "can_change_info"=False,
+                "can_invite_users"=False,
+                "can_pin_messages"=False,
+            }
+            until_date=time.time()+settings.days*86400,
+        )
 
     bot.send_message(
         chat_id=call.message.chat.id,
