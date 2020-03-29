@@ -294,26 +294,32 @@ def handle_callback_vote(bot, call):
         accused.user.last_name,
     )
 
-    if (settings.votes_for_decision >= poll_results["votes_against_amount"]):
-        bot.send_message(
-            chat_id=call.message.chat.id,
-            text=result_message_innocent.format(
-                accused_full_name,
-                accused_id,
-            ),
-            parse_mode="markdown",
-        )
-        database.delete_poll(poll.id)
-    else:
-        bot.send_message(
-            chat_id=call.message.chat.id,
-            text=result_message_guilty.format(
-                accused_full_name,
-                accused_id,
-                "Выебать в жопу"
-            ),
-            parse_mode="markdown",
-        )
-        database.delete_poll(poll.id)
+    bot.send_message(
+        chat_id=call.message.chat.id,
+        text=settings.votes_for_decision,
+        parse_mode="markdown",
+    )
+
+    # if (settings.votes_for_decision >= poll_results["votes_against_amount"]):
+    #     bot.send_message(
+    #         chat_id=call.message.chat.id,
+    #         text=result_message_innocent.format(
+    #             accused_full_name,
+    #             accused_id,
+    #         ),
+    #         parse_mode="markdown",
+    #     )
+    #     database.delete_poll(poll.id)
+    # else:
+    #     bot.send_message(
+    #         chat_id=call.message.chat.id,
+    #         text=result_message_guilty.format(
+    #             accused_full_name,
+    #             accused_id,
+    #             "Выебать в жопу"
+    #         ),
+    #         parse_mode="markdown",
+    #     )
+    #     database.delete_poll(poll.id)
 
     return True
