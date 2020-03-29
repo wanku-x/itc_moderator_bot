@@ -333,7 +333,7 @@ def handle_callback_vote(bot, call):
                 "can_change_info": False,
                 "can_invite_users": False,
                 "can_pin_messages": False,
-            }
+            },
             until_date=time.time()+settings.days*86400,
         )
 
