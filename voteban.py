@@ -279,8 +279,8 @@ def handle_callback_vote(bot, call):
     )
 
     if (
-        (settings.votes_for_decision < poll_results["votes_for_amount"]) and
-        (settings.votes_for_decision < poll_results["votes_against_amount"])
+        (poll_results["votes_for_amount"] < settings.votes_for_decision) and
+        (poll_results["votes_against_amount"] < settings.votes_for_decision)
     ):
         return True
 
@@ -294,7 +294,7 @@ def handle_callback_vote(bot, call):
         accused.user.last_name,
     )
 
-    if (settings.votes_for_decision >= poll_results["votes_against_amount"]):
+    if (poll_results["votes_against_amount"] >= settings.votes_for_decision):
         bot.send_message(
             chat_id=call.message.chat.id,
             text=result_message_innocent.format(
