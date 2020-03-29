@@ -325,14 +325,14 @@ def handle_callback_vote(bot, call):
             chat_id=call.message.chat.id,
             user_id=poll.accused_id,
             permissions={
-                "can_send_messages"=False,
-                "can_send_media_messages"=False,
-                "can_send_polls"=False,
-                "can_send_other_messages"=False,
-                "can_add_web_page_previews"=False,
-                "can_change_info"=False,
-                "can_invite_users"=False,
-                "can_pin_messages"=False,
+                "can_send_messages": False,
+                "can_send_media_messages": False,
+                "can_send_polls": False,
+                "can_send_other_messages": False,
+                "can_add_web_page_previews": False,
+                "can_change_info": False,
+                "can_invite_users": False,
+                "can_pin_messages": False,
             }
             until_date=time.time()+settings.days*86400,
         )
