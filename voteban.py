@@ -10,7 +10,8 @@ poll_message = \
     "[{2}](tg://user?id={3}).\n\n"\
     "Если ты считаешь, что *{2}* нарушил(а) правила чата, жми *\"Да\"*. "\
     "Иначе - жми *\"Нет\"*.\n\n"\
-    "{4}"\
+    "*Причина:* {4}\n\n"\
+    "*Сообщение:* {5}"
 
 voteban_error_poll_already_created = \
     "Голосование за бан [{0}](tg://user?id={1}) уже существует."\
@@ -44,12 +45,14 @@ callback_error_vote_counted = \
 
 result_message_innocent = \
     "Большинство решило, что [{0}](tg://user?id={1}) "\
-    "не нарушал(а) правил чата. Голосование окончено."
+    "не нарушал(а) правил чата. Голосование окончено.\n\n"\
+    "*Cообщение:* {2}"
 
 result_message_guilty = \
     "Большинство решило, что [{0}](tg://user?id={1}) "\
     "нарушил(а) правила чата. Голосование окончено.\n\n"\
-    "*Наказание:* {2}."
+    "*Cообщение:* {2}\n\n"\
+    "*Наказание:* {3}"
 
 
 #
@@ -151,8 +154,8 @@ def handle_voteban(bot, message, reason):
                 accuser_id,
                 accused_full_name,
                 accused_id,
-                "*Причина:* Спам" if reason == "spam" else
-                "*Сообщение:* " + message.reply_to_message.text,
+                "Спам" if reason == "spam" else "-",
+                message.reply_to_message.text if reason != "spam" else "-",
             ),
             parse_mode="markdown",
             reply_markup=create_poll_keyboard()
@@ -300,8 +303,13 @@ def handle_callback_vote(bot, call):
             text=result_message_innocent.format(
                 accused_full_name,
                 poll.accused_id,
+                poll.message,
             ),
             parse_mode="markdown",
+        )
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=poll.message_id,
         )
         database.delete_poll(poll.id)
         return True
@@ -332,9 +340,14 @@ def handle_callback_vote(bot, call):
         text=result_message_guilty.format(
             accused_full_name,
             poll.accused_id,
+            poll.message,
             punishment,
         ),
         parse_mode="markdown",
+    )
+    bot.delete_message(
+        chat_id=call.message.chat.id,
+        message_id=poll.message_id,
     )
     database.delete_poll(poll.id)
 
