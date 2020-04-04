@@ -340,7 +340,7 @@ def handle_callback_vote(bot, call):
         text=result_message_guilty.format(
             accused_full_name,
             poll.accused_id,
-            poll.message,
+            "Спам" if poll.reason == "spam" else poll.message,
             punishment,
         ),
         parse_mode="markdown",
