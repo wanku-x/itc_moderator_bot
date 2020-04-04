@@ -9,6 +9,7 @@ import help
 import settings
 import voteban
 import admin_utils
+import utils
 
 config = configparser.ConfigParser()
 config.read('/home/wanku/itc_moderator_bot/settings.ini')
