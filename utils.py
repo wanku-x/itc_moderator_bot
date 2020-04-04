@@ -19,8 +19,25 @@ def handle_nometa(bot, message):
 
 
 def remove_unwanted_message(bot, message):
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Проверяю сообщение",
+        parse_mode="markdown",
+    )
+
     if not (message.chat.type == "supergroup"):
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Не супергруппа. Конец.",
+            parse_mode="markdown",
+        )
         return False
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Супергруппа, продолжаю",
+        parse_mode="markdown",
+    )
 
     if not (
         message.new_chat_members or
@@ -39,7 +56,18 @@ def remove_unwanted_message(bot, message):
         message.invoice or
         message.successful_payment
     ):
+        bot.send_message(
+            chat_id=message.chat.id,
+            text="Проверил наличие нежелательности. Нихуя не нашел",
+            parse_mode="markdown",
+        )
         return True
+
+    bot.send_message(
+        chat_id=message.chat.id,
+        text="Проверил наличие нежелательности. Нашел, удаляю",
+        parse_mode="markdown",
+    )
 
     bot.delete_message(
         chat_id=message.chat.id,
