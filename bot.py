@@ -70,8 +70,10 @@ def handle_nometa(message):
     utils.handle_nometa(bot, message)
 
 
-@bot.message_handler(func=lambda m: True)
-def echo_all(message):
+@bot.message_handler(func=lambda message: (
+    message.voice is not None
+))
+def remove_unwanted_message(message):
     utils.remove_unwanted_message(bot, message)
 
 
