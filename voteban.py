@@ -119,7 +119,7 @@ def can_poll(bot, message):
 #   Handle methods
 #
 def handle_voteban(bot, message, reason):
-    if not (message.chat.type == "group" or message.chat.type == "supergroup"):
+    if not (message.chat.type == "supergroup"):
         return False
 
     user_can_poll = can_poll(

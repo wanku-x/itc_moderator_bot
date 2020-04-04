@@ -8,6 +8,7 @@ import start
 import help
 import settings
 import voteban
+import admin_utils
 
 config = configparser.ConfigParser()
 config.read('/home/wanku/itc_moderator_bot/settings.ini')
@@ -44,8 +45,28 @@ def handle_offense(message):
 
 
 @bot.message_handler(commands=['spam'])
-def handle_offense(message):
+def handle_spam(message):
     voteban.handle_voteban(bot, message, 'spam')
+
+
+@bot.message_handler(commands=['ban'])
+def handle_ban(message):
+    admin_utils.handle_ban(bot, message)
+
+
+@bot.message_handler(commands=['kick'])
+def handle_kick(message):
+    admin_utils.handle_kick(bot, message)
+
+
+@bot.message_handler(commands=['mute'])
+def handle_mute(message):
+    admin_utils.handle_mute(bot, message)
+
+
+@bot.message_handler(commands=['nometa'])
+def handle_nometa(message):
+    utils.handle_nometa(bot, message)
 
 
 @bot.callback_query_handler(func=lambda call: True)
