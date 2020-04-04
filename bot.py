@@ -70,6 +70,11 @@ def handle_nometa(message):
     utils.handle_nometa(bot, message)
 
 
+@bot.message_handler(func=lambda m: True)
+def echo_all(message):
+    utils.remove_unwanted_message(bot, message)
+
+
 @bot.callback_query_handler(func=lambda call: True)
 def handle_callback(call):
     if call.data == "vote_for" or call.data == "vote_against":
