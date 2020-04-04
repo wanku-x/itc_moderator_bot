@@ -47,31 +47,15 @@ def handle_settings(bot, message):
     ).status
 
     if not (message.chat.type == "supergroup"):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Не супергруппа",
-            parse_mode="markdown",
-        )
         return False
 
     if not (member_status == "creator" or member_status == "administrator"):
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Не админ",
-            parse_mode="markdown",
-        )
         return False
 
     try:
         settings_from_message = json.loads(message.text[9:].strip())
     except json.decoder.JSONDecodeError:
         settings_from_message = None
-
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Проверяю данные",
-        parse_mode="markdown",
-    )
 
     if not (
         settings_from_message and
@@ -84,12 +68,6 @@ def handle_settings(bot, message):
         )
         return False
 
-    bot.send_message(
-        chat_id=message.chat.id,
-        text="Проверил данные. ОК",
-        parse_mode="markdown",
-    )
-
     settings = database.get_settings(
         chat_id=message.chat.id,
     )
@@ -101,22 +79,12 @@ def handle_settings(bot, message):
             punishment=settings_from_message["punishment"],
             days=settings_from_message["days"],
         )
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Создаю запись с настройками",
-            parse_mode="markdown",
-        )
     else:
         database.update_settings(
             id=settings.id,
             votes_for_decision=settings_from_message["votes_for_decision"],
             punishment=settings_from_message["punishment"],
             days=settings_from_message["days"],
-        )
-        bot.send_message(
-            chat_id=message.chat.id,
-            text="Обновляю запись с настройками",
-            parse_mode="markdown",
         )
 
     bot.send_message(
