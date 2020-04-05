@@ -1,6 +1,5 @@
 from schema import Schema, And, SchemaError
 import json
-
 import database
 
 settings_message_error = \

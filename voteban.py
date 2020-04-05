@@ -122,10 +122,7 @@ def handle_voteban(bot, message, reason):
     if not (message.chat.type == "supergroup"):
         return False
 
-    user_can_poll = can_poll(
-        bot=bot,
-        message=message,
-    )
+    user_can_poll = can_poll(bot, message)
 
     if user_can_poll["error"] == "no_reply":
         bot.reply_to(
@@ -145,38 +142,6 @@ def handle_voteban(bot, message, reason):
         message.from_user.first_name,
         message.from_user.last_name,
     )
-
-    if not user_can_poll["error"]:
-        sended_message = bot.send_message(
-            chat_id=message.chat.id,
-            text=poll_message.format(
-                accuser_full_name,
-                accuser_id,
-                accused_full_name,
-                accused_id,
-                "Спам" if reason == "spam" else "-",
-                message.reply_to_message.text if reason != "spam" else "-",
-            ),
-            parse_mode="markdown",
-            reply_markup=create_poll_keyboard()
-        )
-
-        poll_created = database.create_poll(
-            chat_id=sended_message.chat.id,
-            message_id=sended_message.message_id,
-            accuser_id=accuser_id,
-            accused_id=accused_id,
-            message=message.reply_to_message.text,
-            reason=reason
-        )
-
-        if not poll_created:
-            bot.delete_message(
-                chat_id=sended_message.chat.id,
-                message_id=sended_message.message_id,
-            )
-            return False
-        return True
 
     if user_can_poll["error"] == "poll_already_created":
         bot.send_message(
@@ -213,10 +178,37 @@ def handle_voteban(bot, message, reason):
             parse_mode="markdown",
         )
         return False
+
+    if not user_can_poll["error"]:
+        bot.send_message(
+            chat_id=message.chat.id,
+            text=poll_message.format(
+                accuser_full_name,
+                accuser_id,
+                accused_full_name,
+                accused_id,
+                "Спам" if reason == "spam" else "-",
+                message.reply_to_message.text if reason != "spam" else "-",
+            ),
+            parse_mode="markdown",
+            reply_markup=create_poll_keyboard()
+        )
+
+        database.create_poll(
+            chat_id=sended_message.chat.id,
+            message_id=sended_message.message_id,
+            accuser_id=accuser_id,
+            accused_id=accused_id,
+            message=message.reply_to_message.text,
+            reason=reason
+        )
+        return True
+
     return False
 
 
 def handle_callback_vote(bot, call):
+    # Получение голосовалки
     poll = database.get_poll(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
@@ -230,11 +222,13 @@ def handle_callback_vote(bot, call):
         )
         return False
 
+    # Получение голоса
     vote = database.get_vote(
         poll_id=poll.id,
         voted_id=call.from_user.id,
     )
 
+    # Создание/обновление/игнорирование голоса
     if not vote:
         database.create_vote(
             poll_id=poll.id,
@@ -257,10 +251,12 @@ def handle_callback_vote(bot, call):
             to_ban=(call.data == "vote_for"),
         )
 
+    # Получение результатов голосования
     poll_results = database.get_poll_results(
         poll_id=poll.id,
     )
 
+    # Подстановка результатов в клавиатуру
     bot.edit_message_reply_markup(
         chat_id=call.message.chat.id,
         message_id=call.message.message_id,
@@ -270,6 +266,7 @@ def handle_callback_vote(bot, call):
         ),
     )
 
+    # Нотификейшн о выбранном варианте ответа
     bot.answer_callback_query(
         callback_query_id=call.id,
         text=callback_message.format(
@@ -278,16 +275,19 @@ def handle_callback_vote(bot, call):
         show_alert=False,
     )
 
+    # Получение настроек бота
     settings = database.get_settings(
         chat_id=call.message.chat.id
     )
 
+    # Если голосов не достаточно для принятия решения - выход
     if (
         (poll_results["votes_for_amount"] < settings.votes_for_decision) and
         (poll_results["votes_against_amount"] < settings.votes_for_decision)
     ):
         return True
 
+    # Получение инфы об обвиняемом
     accused = bot.get_chat_member(
         chat_id=call.message.chat.id,
         user_id=poll.accused_id,
@@ -297,6 +297,7 @@ def handle_callback_vote(bot, call):
         accused.user.last_name,
     )
 
+    # Большинство проголосовало против - выход
     if (poll_results["votes_against_amount"] >= settings.votes_for_decision):
         bot.send_message(
             chat_id=call.message.chat.id,
@@ -314,8 +315,10 @@ def handle_callback_vote(bot, call):
         database.delete_poll(poll.id)
         return True
 
+    # Определяем тип наказания
     punishment = "ban" if poll.reason == "spam" else settings.punishment
 
+    # Применение наказания
     if (punishment == "ban"):
         bot.kick_chat_member(
             chat_id=call.message.chat.id,
@@ -335,6 +338,7 @@ def handle_callback_vote(bot, call):
             until_date=time.time()+settings.days*86400,
         )
 
+    # Сообщение о наказании
     bot.send_message(
         chat_id=call.message.chat.id,
         text=result_message_guilty.format(
@@ -345,10 +349,14 @@ def handle_callback_vote(bot, call):
         ),
         parse_mode="markdown",
     )
+
+    # Удаление сообщения с голосовалкой
     bot.delete_message(
         chat_id=call.message.chat.id,
         message_id=poll.message_id,
     )
+
+    # Удаление голосовалки
     database.delete_poll(poll.id)
 
     return True
