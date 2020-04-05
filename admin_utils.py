@@ -22,6 +22,17 @@ def can_use_admin_utils(bot, message):
     if not message.reply_to_message:
         return False
 
+    accused_id = message.reply_to_message.from_user.id
+    admins = bot.get_chat_administrators(message.chat.id)
+    admins_id = [admin.user.id for admin in admins]
+    bot_id = bot.get_me().id
+
+    if accused_id in admins_id:
+        return False
+
+    if accused_id == bot_id:
+        return False
+
     return True
 
 
