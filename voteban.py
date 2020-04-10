@@ -200,8 +200,8 @@ def handle_voteban(bot, message, reason):
             accuser_id=accuser_id,
             accused_id=accused_id,
             accused_message=user_message if user_message else "-",
-            accused_message_id=message.reply_to_message.message_id
-            reason=reason
+            accused_message_id=message.reply_to_message.message_id,
+            reason=reason,
         )
         return True
 

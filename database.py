@@ -22,8 +22,8 @@ def create_poll(
             message_id=message_id,
             accuser_id=accuser_id,
             accused_id=accused_id,
-            accused_message=accused_message
-            accused_message_id=accused_message_id
+            accused_message=accused_message,
+            accused_message_id=accused_message_id,
             reason=reason,
         )
         orm.commit()
