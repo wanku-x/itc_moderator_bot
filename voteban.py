@@ -192,12 +192,14 @@ def handle_voteban(bot, message, reason):
             reply_markup=create_poll_keyboard()
         )
 
+        user_message = message.reply_to_message.text
+
         database.create_poll(
             chat_id=sended_message.chat.id,
             message_id=sended_message.message_id,
             accuser_id=accuser_id,
             accused_id=accused_id,
-            message=message.reply_to_message.text,
+            message=user_message if user_message else "-",
             reason=reason
         )
         return True
