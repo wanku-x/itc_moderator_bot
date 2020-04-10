@@ -178,7 +178,7 @@ def handle_voteban(bot, message, reason):
         return False
 
     if not user_can_poll["error"]:
-        bot.send_message(
+        sended_message = bot.send_message(
             chat_id=message.chat.id,
             text=poll_message.format(
                 accuser_full_name,
