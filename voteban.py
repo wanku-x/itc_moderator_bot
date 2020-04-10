@@ -199,7 +199,8 @@ def handle_voteban(bot, message, reason):
             message_id=sended_message.message_id,
             accuser_id=accuser_id,
             accused_id=accused_id,
-            message=user_message if user_message else "-",
+            accused_message=user_message if user_message else "-",
+            accused_message_id=message.reply_to_message.message_id
             reason=reason
         )
         return True
@@ -355,6 +356,13 @@ def handle_callback_vote(bot, call):
         chat_id=call.message.chat.id,
         message_id=poll.message_id,
     )
+
+    # Удаление сообщения со спамом
+    if poll.reason == "spam":
+        bot.delete_message(
+            chat_id=call.message.chat.id,
+            message_id=poll.accused_message_id,
+        )
 
     # Удаление голосовалки
     database.delete_poll(poll.id)

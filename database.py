@@ -7,14 +7,23 @@ from models import Poll, Vote, Settings
 #   Poll methods
 #
 @orm.db_session
-def create_poll(chat_id, message_id, accuser_id, accused_id, message, reason):
+def create_poll(
+    chat_id,
+    message_id,
+    accuser_id,
+    accused_id,
+    accused_message,
+    accused_message_id,
+    reason,
+):
     try:
         poll = Poll(
             chat_id=chat_id,
             message_id=message_id,
             accuser_id=accuser_id,
             accused_id=accused_id,
-            message=message,
+            accused_message=accused_message
+            accused_message_id=accused_message_id
             reason=reason,
         )
         orm.commit()
